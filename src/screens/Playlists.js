@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory, Link } from 'react-router-dom'
+import PlaylistCard from '../components/playlistcard'
+import styled from 'styled-components'
+
+const InputDiv = styled.div`
+  display: flex;
+  justify-content: center;
+`
 
 const Playlists = () => {
+  let history = useHistory()
   const token = localStorage.getItem('token')
   const [playlist, setPlaylist] = useState(null)
   const [refresh, setRefresh] = useState(null)
-  const [refreshTracks, setRefreshTracks] = useState(null)
-  const [tracks, setTracks] = useState(null)
   const [inputValue, setInputValue] = useState('')
-  var myHeaders = new Headers()
+  const myHeaders = new Headers()
   myHeaders.append('Content-Type', 'application/json')
   myHeaders.append('Accept', 'application/json')
   myHeaders.append('Authorization', 'Bearer ' + token)
-  var requestOptions
-  requestOptions = {
+  const requestOptions = {
     method: 'GET',
     headers: myHeaders,
     responseType: 'json'
   }
 
-  function updateTracks(arg) {
-    setRefreshTracks(arg)
-  }
+  useEffect(() => {
+    if (!token) {
+      history.push('/')
+    }
+  }, [])
 
   function getPlaylists() {
     fetch('https://api.spotify.com/v1/me/playlists', requestOptions)
@@ -32,29 +40,9 @@ const Playlists = () => {
     getPlaylists()
   }, [refresh])
 
-  //Update la liste de morceaux quand un morceau est ajouté/supprimé
-  useEffect(() => {
-    if (localStorage.getItem('playlistName') != null) {
-      playlistTracks(
-        localStorage.getItem('playlistName'),
-        localStorage.getItem('playlistID'),
-        localStorage.getItem('userID')
-      )
-    }
-  }, [refreshTracks])
-
-  function playlistTracks(name, id, userID) {
-    localStorage.setItem('playlistID', id)
-    localStorage.setItem('playlistName', name)
-    localStorage.setItem('userID', userID)
-    fetch(`https://api.spotify.com/v1/playlists/${id}/tracks`, requestOptions)
-      .then(res => res.json())
-      .then(data => setTracks(data))
-  }
-
   function addPlaylist(playlistName) {
     var userID = localStorage.getItem('userID')
-    requestOptions = {
+    const requestOptions = {
       method: 'POST',
       headers: myHeaders,
       responseType: 'json',
@@ -80,31 +68,25 @@ const Playlists = () => {
 
   return (
     <div>
-      <h2> ⮚Mes Playlists :</h2>
+      <h1>Mes Playlists</h1>
       {playlist !== null ? (
         <div>
-          <ul>
-            {playlist.items.map((element, index) => (
-              <li
-                title='Cliquez pour afficher les morceaux de la playlist'
-                key={index}
-                onClick={() =>
-                  playlistTracks(element.name, element.id, element.owner.id)
-                }
-              >
-                {element.name}
-              </li>
-            ))}
-          </ul>
-          <input
-            type='text'
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            onKeyPress={e => enterPressed(e)}
-          ></input>
-          <button onClick={() => addPlaylist(inputValue)}>
-            Créer une playlist
-          </button>
+          {playlist.items.map((element, index) => (
+            <Link to={`/playlists/${element.id}`} key={index}>
+              <PlaylistCard data={element} />
+            </Link>
+          ))}
+          <InputDiv>
+            <input
+              type='text'
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              onKeyPress={e => enterPressed(e)}
+            ></input>
+            <button onClick={() => addPlaylist(inputValue)}>
+              Créer une playlist
+            </button>
+          </InputDiv>
         </div>
       ) : (
         <div>

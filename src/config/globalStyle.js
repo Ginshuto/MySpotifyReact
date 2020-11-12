@@ -4,9 +4,13 @@ export const GlobalStyle = createGlobalStyle`
 /* You can add global styles to this file, and also import other style files */
 
 body {
+  height: 100%;
   color: ${({ theme }) => theme.fontColor};
-  background: linear-gradient(#282828, black) no-repeat center center fixed;
+  background: linear-gradient(${({ theme }) => theme.gradient1}, ${({
+  theme
+}) => theme.gradient2}) no-repeat center center fixed;
   background-size: cover;
+  padding: 5%;
 }
 
 
@@ -14,19 +18,13 @@ body {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-a {
-  color: ${({ theme }) => theme.fontColor};
+h1{
+  width: 100%;
+  color: #1DB954;
+  text-transform: uppercase;
+  text-align: center;
 }
-
-.login {
-  color: #509BF5;
-}
-
-.disconnect {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
+  
 h2,
 h3,
 h4 {
@@ -34,32 +32,24 @@ h4 {
   margin-bottom: 5px;
 }
 
-a:hover {
-  font-weight: bold;
-}
-
 ul {
-  padding-left: 20px;
+  padding: 0;
 }
 
 li {
   list-style: none;
   margin: 5px 0 5px 0;
   cursor: pointer;
-  width: fit-content;
+  width: 100%;
 }
 
 li::before {
   content: "♪";
-  color: #1DB954;
+  color: ${({ theme }) => theme.symbolColor};
   font-weight: bold;
   display: inline-block;
   width: 1em;
   margin-left: -1em;
-}
-
-li:hover {
-  font-weight: bold;
 }
 
 input {
@@ -68,27 +58,23 @@ input {
 }
 
 input[type="text"] {
-  background-color: #282828;
-  color: grey;
+  background-color: transparent;
+  color: ${({ theme }) => theme.fontColor};
   border: 1px solid #1DB954;
   padding: 10px;
+  border-radius: 4px;
+  margin: 0 10px 0 0;
   font-weight: bold;
 }
 
 button {
   background-color: #1DB954;
-  padding: 11px 10px;
+  padding: 10px;
+  text-transform: uppercase;
   color: white;
+  min-width: 155px;
+  font-size: 12px;
   border-radius: 50px;
   border: none;
-}
-
-.add,
-.delete {
-  text-decoration: underline;
-}
-
-.add:hover {
-  cursor: pointer;
 }
 `

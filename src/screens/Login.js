@@ -1,18 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import { useHistory, Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
+import styled from 'styled-components'
 
-const Login = () => {
+const LoginContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+const LoginLink = styled.a`
+  display: inline-block;
+  text-align: center;
+  width: 70%;
+  margin: 25px 15% 0 15%;
+  box-sizing: border-box;
+  color: white;
+  background-color: #1db954;
+  text-decoration: none;
+  padding: 11px 10px;
+  border-radius: 50px;
+`
+
+const Login = props => {
   let history = useHistory()
-  useEffect(() => {
-    if (window.location.hash !== '') {
-      // Créer un item avec l'heure à laquelle le token a été crée, et faire un check à chaque chargement
-      localStorage.setItem(
-        'token',
-        window.location.hash.match(/access_token=([^&]*)/)[1]
-      )
-      history.push('/playlists')
-    }
-  }, [])
+  const internet = navigator.onLine
   const client_ID = '12ebc58d644148119c27df63ef38fc7d'
   const redirect_URI = 'http://localhost:3000'
   const scopes =
@@ -25,15 +35,31 @@ const Login = () => {
     '&scope=' +
     scopes
 
-  function disconnect() {
-    // setLogged(false)
-    window.location.href = `${window.location.origin}${window.location.pathname}`
-  }
+  useEffect(() => {
+    if (window.location.hash !== '') {
+      localStorage.setItem(
+        'token',
+        window.location.hash.match(/access_token=([^&]*)/)[1]
+      )
+      props.setToken(localStorage.getItem('token'))
+      history.push('/playlists')
+    } else {
+      localStorage.removeItem('token')
+    }
+  }, [])
+
   return (
-    <div>
-      <h1>Welcome to MySpotify !</h1>
-      <a href={authorizeURL}>Se connecter à Spotify</a>
-    </div>
+    <LoginContainer>
+      <h1>Bienvenue sur MySpotify !</h1>
+      {!internet ? (
+        <p>
+          Vous êtes actuellement hors connexion. Veuillez vous connecter à
+          Internet.
+        </p>
+      ) : (
+        <LoginLink href={authorizeURL}>Se connecter à Spotify</LoginLink>
+      )}
+    </LoginContainer>
   )
 }
 
